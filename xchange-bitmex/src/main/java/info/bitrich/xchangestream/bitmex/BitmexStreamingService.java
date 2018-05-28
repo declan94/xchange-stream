@@ -1,25 +1,25 @@
 package info.bitrich.xchangestream.bitmex;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import info.bitrich.xchangestream.bitmex.dto.BitmexWebSocketSubscriptionMessage;
+import info.bitrich.xchangestream.bitmex.dto.BitmexWebSocketTransaction;
+import info.bitrich.xchangestream.service.netty.JsonNettyStreamingService;
 import io.netty.handler.codec.http.websocketx.extensions.WebSocketClientExtensionHandler;
-import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
+import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import info.bitrich.xchangestream.bitmex.dto.BitmexWebSocketSubscriptionMessage;
-import info.bitrich.xchangestream.bitmex.dto.BitmexWebSocketTransaction;
-import info.bitrich.xchangestream.service.netty.JsonNettyStreamingService;
-import io.reactivex.Observable;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by Lukas Zaoralek on 13.11.17.
@@ -34,7 +34,7 @@ public class BitmexStreamingService extends JsonNettyStreamingService {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-	 @Override
+    @Override
     protected void handleMessage(JsonNode message) {
         if (!delayEmitters.isEmpty() && message.has("data")) {
             JsonNode data = message.get("data");
