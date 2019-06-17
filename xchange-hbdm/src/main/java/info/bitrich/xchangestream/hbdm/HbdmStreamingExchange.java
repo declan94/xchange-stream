@@ -3,7 +3,9 @@ package info.bitrich.xchangestream.hbdm;
 import info.bitrich.xchangestream.core.ProductSubscription;
 import info.bitrich.xchangestream.core.StreamingExchange;
 import info.bitrich.xchangestream.core.StreamingMarketDataService;
+import io.netty.channel.ChannelHandlerContext;
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import org.knowm.xchange.hbdm.HbdmExchange;
 
 public class HbdmStreamingExchange extends HbdmExchange implements StreamingExchange {
@@ -34,7 +36,20 @@ public class HbdmStreamingExchange extends HbdmExchange implements StreamingExch
 
     @Override
     public Completable disconnect() {
-        return null;
+        Completable disconn = streamingMarketService.disconnect();
+        if (exchangeSpecification.getApiKey() == null) {
+            return disconn;
+        }
+        return disconn.andThen(streamingTradeService.disconnect());
+    }
+
+    @Override
+    public Observable<ChannelHandlerContext> disconnectObservable() {
+        Observable<ChannelHandlerContext> observable = streamingMarketService.subscribeDisconnect();
+        if (exchangeSpecification.getApiKey() == null) {
+            return observable;
+        }
+        return observable.mergeWith(streamingTradeService.subscribeDisconnect());
     }
 
     @Override
