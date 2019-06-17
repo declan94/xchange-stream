@@ -1,5 +1,6 @@
 package info.bitrich.xchangestream.hbdm;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import info.bitrich.xchangestream.service.netty.JsonNettyStreamingService;
@@ -23,6 +24,7 @@ public abstract class HbdmStreamingService extends JsonNettyStreamingService {
 
     public HbdmStreamingService(String apiUrl) {
         super(apiUrl);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @Override
