@@ -10,19 +10,15 @@ import org.knowm.xchange.hbdm.HbdmExchange;
 
 public class HbdmStreamingExchange extends HbdmExchange implements StreamingExchange {
 
-    private static final String MARKET_API_URI = "wss://www.hbdm.com/ws";
-
-    private static final String TRADE_API_URI = "wss://api.hbdm.com/notification";
-
-    private HbdmStreamingTradeService streamingTradeService;
+    protected HbdmStreamingTradeService streamingTradeService;
 
     private HbdmStreamingMarketService streamingMarketService;
 
     @Override
     protected void initServices() {
         super.initServices();
-        streamingMarketService = new HbdmStreamingMarketService(MARKET_API_URI);
-        streamingTradeService = new HbdmStreamingTradeService(TRADE_API_URI);
+        streamingMarketService = new HbdmStreamingMarketService();
+        streamingTradeService = new HbdmStreamingTradeService();
     }
 
     @Override
@@ -68,4 +64,8 @@ public class HbdmStreamingExchange extends HbdmExchange implements StreamingExch
 
     }
 
+    @Override
+    public Observable<Long> messageDelay() {
+        return Observable.create(streamingMarketService::addDelayEmitter);
+    }
 }

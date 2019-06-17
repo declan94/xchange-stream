@@ -21,6 +21,8 @@ public class HbdmStreamingTradeService extends HbdmStreamingService {
 
     private final static Logger logger = LoggerFactory.getLogger(HbdmStreamingTradeService.class);
 
+    private static final String TRADE_API_URI = "wss://api.hbdm.com/notification";
+
     private String requestHost = "";
 
     private String requestPath = "";
@@ -35,6 +37,10 @@ public class HbdmStreamingTradeService extends HbdmStreamingService {
             requestPath = uri.getPath();
         } catch (URISyntaxException e) {
         }
+    }
+
+    public HbdmStreamingTradeService() {
+        this(TRADE_API_URI);
     }
 
     public void setExchangeSpecification(ExchangeSpecification exchangeSpecification) {

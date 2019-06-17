@@ -25,6 +25,16 @@ public class HbdmExchangeTest {
                 .subscribe(orderBook -> {
                     List<BigDecimal> bidsPrices = orderBook.getBids().stream().map(LimitOrder::getLimitPrice)
                             .collect(Collectors.toList());
+                    System.out.println("QUARTER");
+                    System.out.println(bidsPrices.size());
+                    System.out.println(bidsPrices);
+                });
+
+        exchange.getStreamingMarketDataService().getOrderBook(CurrencyPair.BTC_USD, HbdmPrompt.THIS_WEEK)
+                .subscribe(orderBook -> {
+                    List<BigDecimal> bidsPrices = orderBook.getBids().stream().map(LimitOrder::getLimitPrice)
+                            .collect(Collectors.toList());
+                    System.out.println("THIS_WEEK");
                     System.out.println(bidsPrices.size());
                     System.out.println(bidsPrices);
                 });

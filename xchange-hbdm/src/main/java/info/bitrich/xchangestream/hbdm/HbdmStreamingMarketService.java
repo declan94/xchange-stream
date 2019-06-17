@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import info.bitrich.xchangestream.core.StreamingMarketDataService;
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.marketdata.OrderBook;
 import org.knowm.xchange.dto.marketdata.Ticker;
@@ -23,8 +24,14 @@ public class HbdmStreamingMarketService extends HbdmStreamingService implements 
 
     private final static Logger logger = LoggerFactory.getLogger(HbdmStreamingMarketService.class);
 
+    private static final String MARKET_API_URI = "wss://www.hbdm.com/ws";
+
     public HbdmStreamingMarketService(String apiUrl) {
         super(apiUrl);
+    }
+
+    public HbdmStreamingMarketService() {
+        this(MARKET_API_URI);
     }
 
     @Override
@@ -55,6 +62,11 @@ public class HbdmStreamingMarketService extends HbdmStreamingService implements 
                 logger.error("Convert pong message to json failed", e);
             }
             return;
+        }
+        if (message.has("ts")) {
+            for (ObservableEmitter<Long> emitter : delayEmitters) {
+                emitter.onNext(System.currentTimeMillis() - message.get("ts").longValue());
+            }
         }
         if (message.has("status")) {
             logger.info("Response message: {}", message);

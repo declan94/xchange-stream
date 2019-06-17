@@ -12,19 +12,28 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import io.reactivex.ObservableEmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 public abstract class HbdmStreamingService extends JsonNettyStreamingService {
 
     protected final ObjectMapper mapper = new ObjectMapper();
 
+    protected List<ObservableEmitter<Long>> delayEmitters = new LinkedList<>();
+
     public HbdmStreamingService(String apiUrl) {
         super(apiUrl);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
+    public void addDelayEmitter(ObservableEmitter<Long> delayEmitter) {
+        delayEmitters.add(delayEmitter);
     }
 
     @Override
