@@ -43,10 +43,14 @@ public class HbdmStreamingTradeService extends HbdmStreamingService {
 
     @Override
     public Completable connect() {
-        return super.connect().andThen((CompletableSource) (completable) -> {
+        Completable conn = super.connect();
+        String apiKey = exchangeSpecification.getApiKey();
+        String apiSecret = exchangeSpecification.getSecretKey();
+        if (apiKey == null || apiKey.isEmpty()) {
+            return conn;
+        }
+        return conn.andThen((CompletableSource) (completable) -> {
             // login
-            String apiKey = exchangeSpecification.getApiKey();
-            String apiSecret = exchangeSpecification.getSecretKey();
             try {
                 Map<String, Object> authMsg = HbdmAuthenticator.authenticateMessage(apiKey, apiSecret, requestHost, requestPath);
                 sendMessage(mapper.writeValueAsString(authMsg));
