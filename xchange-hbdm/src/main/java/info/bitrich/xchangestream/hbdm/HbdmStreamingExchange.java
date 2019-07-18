@@ -68,4 +68,12 @@ public class HbdmStreamingExchange extends HbdmExchange implements StreamingExch
     public Observable<Long> messageDelay() {
         return Observable.create(streamingMarketService::addDelayEmitter);
     }
+
+    @Override
+    public void resubscribeChannels() {
+        streamingMarketService.resubscribeChannels();
+        if (exchangeSpecification.getApiKey() != null) {
+            streamingTradeService.resubscribeChannels();
+        }
+    }
 }
